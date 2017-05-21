@@ -105,7 +105,7 @@ class BTreeFolder2Tests(unittest.TestCase):
         self.assert_(values[0].aq_parent is self.f)
 
     def testValues(self):
-        values = self.f.values()
+        values = list(self.f.values())
         self.assertEqual(len(values), 1)
         self.assertEqual(values[0].id, 'item')
 
@@ -118,7 +118,7 @@ class BTreeFolder2Tests(unittest.TestCase):
         self.assert_(val.aq_parent is self.f)
 
     def testItems(self):
-        items = self.f.items()
+        items = list(self.f.items())
         self.assertEqual(len(items), 1)
         id, val = items[0]
         self.assertEqual(id, 'item')
@@ -126,7 +126,7 @@ class BTreeFolder2Tests(unittest.TestCase):
 
     def testHasKey(self):
         self.assert_(self.f.hasObject('item'))  # Old spelling
-        self.assert_(self.f.has_key('item'))  # NOQA, New spelling
+        self.assert_('item' in self.f)  # NOQA, New spelling
 
     def testContains(self):
         self.assert_('item' in self.f)
@@ -145,7 +145,7 @@ class BTreeFolder2Tests(unittest.TestCase):
         iterator = iter(self.f)
         first = six.next(iterator)
         self.assertEquals(first, 'item')
-        self.assertRaises(StopIteration, six.next, iterator)
+        self.assertRaises(StopIteration, six.__next__, iterator)
 
     def testObjectMap(self):
         map = self.f.objectMap()
@@ -182,7 +182,7 @@ class BTreeFolder2Tests(unittest.TestCase):
         for n in range(10):
             ids[self.f.generateId()] = 1
         self.assertEqual(len(ids), 10)  # All unique
-        for id in ids.keys():
+        for id in list(ids.keys()):
             self.f._checkId(id)  # Must all be valid
 
     def testGenerateIdDenialOfServicePrevention(self):

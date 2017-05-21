@@ -170,20 +170,20 @@ class BTreeFolder2Base(Persistent):
         path = '/'.join(self.getPhysicalPath())
         try:
             check(self._tree)
-            for key in self._tree.keys():
+            for key in list(self._tree.keys()):
                 if key not in self._tree:
                     raise AssertionError(
                         "Missing value for key: %s" % repr(key))
             check(self._mt_index)
             keys = set(self._tree.keys())
-            for key, value in self._mt_index.items():
+            for key, value in list(self._mt_index.items()):
                 if (key not in self._mt_index or
                         self._mt_index[key] is not value):
                     raise AssertionError(
                         "Missing or incorrect meta_type index: %s"
                         % repr(key))
                 check(value)
-                for k in value.keys():
+                for k in list(value.keys()):
                     if k not in value or k not in keys:
                         raise AssertionError(
                             "Missing values for meta_type index: %s"
@@ -196,7 +196,7 @@ class BTreeFolder2Base(Persistent):
                 self._tree = OOBTree(self._tree)
                 keys = set(self._tree.keys())
                 mt_index = OOBTree()
-                for key, value in self._mt_index.items():
+                for key, value in list(self._mt_index.items()):
                     for name in tuple(value.keys()):
                         if name not in keys:
                             del value[name]
@@ -339,7 +339,7 @@ class BTreeFolder2Base(Persistent):
     def __len__(self):
         return self.objectCount()
 
-    def __nonzero__(self):
+    def __bool__(self):
         return True
 
     security.declareProtected(access_contents_information, 'has_key')
@@ -359,7 +359,7 @@ class BTreeFolder2Base(Persistent):
         # matches 'spec'.
 
         if spec is None:
-            return self._tree.keys()
+            return list(self._tree.keys())
 
         if isinstance(spec, str):
             spec = [spec]
@@ -373,7 +373,7 @@ class BTreeFolder2Base(Persistent):
         if set is None:
             return ()
         else:
-            return set.keys()
+            return list(set.keys())
 
     def __contains__(self, name):
         return name in self._tree
@@ -410,7 +410,7 @@ class BTreeFolder2Base(Persistent):
             k, v = value
             return {'id': k, 'meta_type': getattr(v, 'meta_type', None)}
 
-        return LazyMap(func, self._tree.items(), self._count())
+        return LazyMap(func, list(self._tree.items()), self._count())
 
     security.declareProtected(access_contents_information, 'objectIds_d')
     def objectIds_d(self, t=None):
